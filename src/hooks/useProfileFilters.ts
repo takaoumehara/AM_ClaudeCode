@@ -34,19 +34,19 @@ export const useProfileFilters = (
     const teamsSet = new Set<string>();
 
     profiles.forEach(({ profile }) => {
-      // Collect skills
-      if (profile.core.mainSkills) {
+      // Collect skills - check if profile.core exists first
+      if (profile?.core?.mainSkills) {
         profile.core.mainSkills.forEach(skill => {
-          if (skill.trim()) {
+          if (skill && skill.trim()) {
             skillsSet.add(skill);
           }
         });
       }
 
-      // Collect teams
-      if (profile.core.teamIds) {
+      // Collect teams - check if profile.core exists first
+      if (profile?.core?.teamIds) {
         profile.core.teamIds.forEach(teamId => {
-          if (teamId.trim()) {
+          if (teamId && teamId.trim()) {
             teamsSet.add(teamId);
           }
         });
@@ -67,10 +67,10 @@ export const useProfileFilters = (
     if (filters.searchTerm.trim()) {
       const searchLower = filters.searchTerm.toLowerCase().trim();
       filtered = filtered.filter(({ profile }) => {
-        const name = profile.core.name?.toLowerCase() || '';
-        const title = profile.core.mainTitle?.toLowerCase() || '';
-        const skills = profile.core.mainSkills?.map(s => s.toLowerCase()).join(' ') || '';
-        const teams = profile.core.teamIds?.join(' ').toLowerCase() || '';
+        const name = profile?.core?.name?.toLowerCase() || '';
+        const title = profile?.core?.mainTitle?.toLowerCase() || '';
+        const skills = profile?.core?.mainSkills?.map(s => s.toLowerCase()).join(' ') || '';
+        const teams = profile?.core?.teamIds?.join(' ').toLowerCase() || '';
 
         return (
           name.includes(searchLower) ||
@@ -84,13 +84,13 @@ export const useProfileFilters = (
     // Apply skills filter
     if (filters.selectedSkills.length > 0) {
       filtered = filtered.filter(({ profile }) => {
-        if (!profile.core.mainSkills || profile.core.mainSkills.length === 0) {
+        if (!profile?.core?.mainSkills || profile.core.mainSkills.length === 0) {
           return false;
         }
 
         // Check if profile has any of the selected skills
         return filters.selectedSkills.some(selectedSkill =>
-          profile.core.mainSkills!.includes(selectedSkill)
+          profile.core.mainSkills?.includes(selectedSkill)
         );
       });
     }
@@ -98,13 +98,13 @@ export const useProfileFilters = (
     // Apply teams filter
     if (filters.selectedTeams.length > 0) {
       filtered = filtered.filter(({ profile }) => {
-        if (!profile.core.teamIds || profile.core.teamIds.length === 0) {
+        if (!profile?.core?.teamIds || profile.core.teamIds.length === 0) {
           return false;
         }
 
         // Check if profile has any of the selected teams
         return filters.selectedTeams.some(selectedTeam =>
-          profile.core.teamIds!.includes(selectedTeam)
+          profile.core.teamIds?.includes(selectedTeam)
         );
       });
     }

@@ -38,28 +38,28 @@ export const useTableSort = (
 
       switch (sortField) {
         case 'name':
-          aValue = a.profile.core.name?.toLowerCase() || '';
-          bValue = b.profile.core.name?.toLowerCase() || '';
+          aValue = a.profile?.core?.name?.toLowerCase() || '';
+          bValue = b.profile?.core?.name?.toLowerCase() || '';
           break;
 
         case 'title':
-          aValue = a.profile.core.mainTitle?.toLowerCase() || '';
-          bValue = b.profile.core.mainTitle?.toLowerCase() || '';
+          aValue = a.profile?.core?.mainTitle?.toLowerCase() || '';
+          bValue = b.profile?.core?.mainTitle?.toLowerCase() || '';
           break;
 
         case 'skillCount':
-          aValue = a.profile.core.mainSkills?.length || 0;
-          bValue = b.profile.core.mainSkills?.length || 0;
+          aValue = a.profile?.core?.mainSkills?.length || 0;
+          bValue = b.profile?.core?.mainSkills?.length || 0;
           break;
 
         case 'teamCount':
-          aValue = a.profile.core.teamIds?.length || 0;
-          bValue = b.profile.core.teamIds?.length || 0;
+          aValue = a.profile?.core?.teamIds?.length || 0;
+          bValue = b.profile?.core?.teamIds?.length || 0;
           break;
 
         default:
-          aValue = a.profile.core.name?.toLowerCase() || '';
-          bValue = b.profile.core.name?.toLowerCase() || '';
+          aValue = a.profile?.core?.name?.toLowerCase() || '';
+          bValue = b.profile?.core?.name?.toLowerCase() || '';
       }
 
       // Handle string comparison

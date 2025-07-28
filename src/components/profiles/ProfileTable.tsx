@@ -170,10 +170,10 @@ export const ProfileTable: React.FC<ProfileTableProps> = ({
             <div key={id} className="p-4 hover:bg-gray-50">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
-                  {profile.core.photoUrl ? (
+                  {profile?.core?.photoUrl ? (
                     <Image
                       src={profile.core.photoUrl}
-                      alt={profile.core.name}
+                      alt={profile?.core?.name || 'Profile'}
                       width={48}
                       height={48}
                       className="w-full h-full object-cover"
@@ -197,7 +197,7 @@ export const ProfileTable: React.FC<ProfileTableProps> = ({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-gray-900 truncate">
-                      {profile.core.name}
+                      {profile?.core?.name || 'Unknown'}
                     </p>
                     <Link
                       href={`/profiles/${id}`}
@@ -206,13 +206,13 @@ export const ProfileTable: React.FC<ProfileTableProps> = ({
                       View
                     </Link>
                   </div>
-                  {profile.core.mainTitle && (
+                  {profile?.core?.mainTitle && (
                     <p className="text-sm text-gray-600 truncate">
                       {profile.core.mainTitle}
                     </p>
                   )}
                   <div className="mt-2 flex flex-wrap gap-1">
-                    {profile.core.mainSkills && profile.core.mainSkills.length > 0 ? (
+                    {profile?.core?.mainSkills && profile.core.mainSkills.length > 0 ? (
                       <>
                         {profile.core.mainSkills.slice(0, 2).map((skill, index) => (
                           <span
@@ -265,10 +265,10 @@ export const ProfileTable: React.FC<ProfileTableProps> = ({
                 {/* Profile Photo */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-                    {profile.core.photoUrl ? (
+                    {profile?.core?.photoUrl ? (
                       <Image
                         src={profile.core.photoUrl}
-                        alt={profile.core.name}
+                        alt={profile?.core?.name || 'Profile'}
                         width={40}
                         height={40}
                         className="w-full h-full object-cover"
@@ -294,14 +294,14 @@ export const ProfileTable: React.FC<ProfileTableProps> = ({
                 {/* Name */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
-                    {profile.core.name}
+                    {profile?.core?.name || 'Unknown'}
                   </div>
                 </td>
 
                 {/* Title */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-700">
-                    {profile.core.mainTitle || (
+                    {profile?.core?.mainTitle || (
                       <span className="text-gray-400 italic">No title</span>
                     )}
                   </div>
@@ -310,7 +310,7 @@ export const ProfileTable: React.FC<ProfileTableProps> = ({
                 {/* Skills */}
                 <td className="px-6 py-4">
                   <div className="flex flex-wrap gap-1 max-w-xs">
-                    {profile.core.mainSkills && profile.core.mainSkills.length > 0 ? (
+                    {profile?.core?.mainSkills && profile.core.mainSkills.length > 0 ? (
                       <>
                         {profile.core.mainSkills.slice(0, 3).map((skill, index) => (
                           <span
@@ -335,7 +335,7 @@ export const ProfileTable: React.FC<ProfileTableProps> = ({
                 {/* Teams */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-700">
-                    {profile.core.teamIds && profile.core.teamIds.length > 0 ? (
+                    {profile?.core?.teamIds && profile.core.teamIds.length > 0 ? (
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
                         {profile.core.teamIds.length} team{profile.core.teamIds.length !== 1 ? 's' : ''}
                       </span>

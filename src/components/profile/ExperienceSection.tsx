@@ -117,7 +117,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           </p>
         </div>
       </div>
-    </div>
+    </CollapsibleSection>
   );
 };
 
@@ -180,6 +180,6 @@ const TeamCard: React.FC<TeamCardProps> = ({ teamId }) => {
           <span>Team ID: {teamId}</span>
         </div>
       </div>
-    </CollapsibleSection>
+    </div>
   );
 };

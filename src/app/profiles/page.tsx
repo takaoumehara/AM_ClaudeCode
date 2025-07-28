@@ -77,7 +77,7 @@ export default function ProfilesPage() {
                   Edit Profile
                 </Link>
                 <span className="text-sm text-gray-700">
-                  {profile?.core.name || user?.displayName || user?.email}
+                  {profile?.core?.name || user?.displayName || user?.email}
                 </span>
                 <button
                   onClick={handleLogout}
@@ -102,7 +102,7 @@ export default function ProfilesPage() {
                 {/* Welcome Section */}
                 <div className="text-center">
                   <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                    {profile?.core.name ? `Welcome, ${profile.core.name}!` : 'Welcome to Your Profile Dashboard'}
+                    {profile?.core?.name ? `Welcome, ${profile.core.name}!` : 'Welcome to Your Profile Dashboard'}
                   </h2>
                   <p className="text-lg text-gray-600">
                     {profile ? 'Manage your profile and connect with others' : 'Get started by creating your profile'}
@@ -116,10 +116,10 @@ export default function ProfilesPage() {
                       <div className="flex items-center space-x-6">
                         {/* Profile Photo */}
                         <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                          {profile.core.photoUrl ? (
+                          {profile.core?.photoUrl ? (
                             <img
                               src={profile.core.photoUrl}
-                              alt={profile.core.name}
+                              alt={profile.core?.name || 'Profile'}
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -133,13 +133,13 @@ export default function ProfilesPage() {
 
                         {/* Profile Info */}
                         <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-gray-900">{profile.core.name}</h3>
-                          {profile.core.mainTitle && (
+                          <h3 className="text-2xl font-bold text-gray-900">{profile.core?.name || 'Unnamed Profile'}</h3>
+                          {profile.core?.mainTitle && (
                             <p className="text-lg text-gray-600 mt-1">{profile.core.mainTitle}</p>
                           )}
                           
                           {/* Skills */}
-                          {profile.core.mainSkills && profile.core.mainSkills.length > 0 && (
+                          {profile.core?.mainSkills && profile.core.mainSkills.length > 0 && (
                             <div className="mt-4">
                               <h4 className="text-sm font-medium text-gray-700 mb-2">Skills</h4>
                               <div className="flex flex-wrap gap-2">
