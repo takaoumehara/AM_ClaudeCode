@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrganization } from '@/contexts/OrganizationContext';
-import { logOut } from '@/lib/firebase/auth';
 import { getUserProfile, type UserProfile } from '@/lib/firebase/profiles';
 
 export default function ProfilesPage() {
@@ -32,63 +32,11 @@ export default function ProfilesPage() {
     loadProfile();
   }, [user]);
 
-  const handleLogout = async () => {
-    try {
-      await logOut();
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen">
-        {/* Navigation Bar */}
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center">
-                <h1 className="text-xl font-semibold text-gray-900">
-                  AboutMe Cards
-                </h1>
-                {currentOrganization && (
-                  <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                    {currentOrganization.name}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center space-x-4">
-                <Link
-                  href="/browse"
-                  className="text-sm text-green-600 hover:text-green-700 px-3 py-1 rounded-md border border-green-200 hover:border-green-300"
-                >
-                  Card View
-                </Link>
-                <Link
-                  href="/list"
-                  className="text-sm text-purple-600 hover:text-purple-700 px-3 py-1 rounded-md border border-purple-200 hover:border-purple-300"
-                >
-                  List View
-                </Link>
-                <Link
-                  href="/profile/edit"
-                  className="text-sm text-blue-600 hover:text-blue-700 px-3 py-1 rounded-md border border-blue-200 hover:border-blue-300"
-                >
-                  Edit Profile
-                </Link>
-                <span className="text-sm text-gray-700">
-                  {profile?.core?.name || user?.displayName || user?.email}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="text-sm text-gray-500 hover:text-gray-700"
-                >
-                  Sign out
-                </button>
-              </div>
-            </div>
-          </div>
-        </nav>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -104,9 +52,30 @@ export default function ProfilesPage() {
                   <h2 className="text-3xl font-bold text-gray-900 mb-4">
                     {profile?.core?.name ? `Welcome, ${profile.core.name}!` : 'Welcome to Your Profile Dashboard'}
                   </h2>
-                  <p className="text-lg text-gray-600">
+                  <p className="text-lg text-gray-600 mb-6">
                     {profile ? 'Manage your profile and connect with others' : 'Get started by creating your profile'}
                   </p>
+                  
+                  {/* Quick Actions */}
+                  <div className="flex justify-center gap-4">
+                    <Link
+                      href="/browse"
+                      className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      Browse Profiles
+                    </Link>
+                    {!profile && (
+                      <Link
+                        href="/profile/edit"
+                        className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Create Profile
+                      </Link>
+                    )}
+                  </div>
                 </div>
 
                 {/* Profile Overview */}
