@@ -38,9 +38,9 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSave, initialData })
         const profile = await getUserProfile(user.uid);
         if (profile?.core) {
           setFormData({
-            name: profile.core.name || '',
-            mainTitle: profile.core.mainTitle || '',
-            mainSkills: profile.core.mainSkills || []
+            name: profile.core?.name || '',
+            mainTitle: profile.core?.mainTitle || '',
+            mainSkills: profile.core?.mainSkills || []
           });
         }
       } catch (err) {

@@ -15,7 +15,7 @@ interface ProfilePageParams {
 }
 
 export default function UserProfilePage() {
-  const params = useParams() as ProfilePageParams;
+  const params = useParams() as unknown as ProfilePageParams;
   const router = useRouter();
   const { user: currentUser } = useAuth();
   const { currentOrganization } = useOrganization();

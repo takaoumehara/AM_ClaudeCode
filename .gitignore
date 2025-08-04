@@ -40,3 +40,10 @@ next-env.d.ts
 # firebase
 .firebase/
 firebase-debug.log
+
+# editor
+.vscode/
+.idea/
+
+# claude
+.claude/

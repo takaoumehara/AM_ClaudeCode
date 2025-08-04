@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  GithubAuthProvider,
   signOut,
   onAuthStateChanged,
   User,
@@ -15,6 +16,9 @@ import { auth, db } from './config';
 
 // Google Auth Provider
 const googleProvider = new GoogleAuthProvider();
+
+// GitHub Auth Provider
+const githubProvider = new GithubAuthProvider();
 
 // Authentication functions
 export const signUpWithEmail = async (
@@ -46,6 +50,17 @@ export const signInWithEmail = async (
 export const signInWithGoogle = async (): Promise<UserCredential> => {
   try {
     const userCredential = await signInWithPopup(auth, googleProvider);
+    await createUserDocument(userCredential.user);
+    await updateLastLogin(userCredential.user);
+    return userCredential;
+  } catch (error) {
+    throw handleAuthError(error as AuthError);
+  }
+};
+
+export const signInWithGitHub = async (): Promise<UserCredential> => {
+  try {
+    const userCredential = await signInWithPopup(auth, githubProvider);
     await createUserDocument(userCredential.user);
     await updateLastLogin(userCredential.user);
     return userCredential;

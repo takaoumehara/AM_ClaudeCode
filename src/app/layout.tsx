@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { OrganizationProvider } from '@/contexts/OrganizationContext';
+// import { TamaguiClientProvider } from '@/components/providers/TamaguiClientProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 

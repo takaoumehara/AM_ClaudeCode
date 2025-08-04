@@ -116,7 +116,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({
       <div className="bg-white rounded-lg shadow-sm border p-6 space-y-8">
         {/* Photo Upload Section */}
         <ImageUpload
-          currentPhotoUrl={profile?.core.photoUrl}
+          currentPhotoUrl={profile?.core?.photoUrl}
           onPhotoUpdate={handlePhotoUpdate}
           onPhotoRemove={handlePhotoRemove}
         />

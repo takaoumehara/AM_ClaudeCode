@@ -54,7 +54,7 @@ export default function DemoSetupPage() {
       await setDoc(doc(db, 'organizations', DEMO_ORG.id), orgData);
 
       // Create all user accounts and profiles using batch writes
-      const createdUsers = [];
+      const createdUsers: any[] = [];
       const batch = writeBatch(db);
       let batchCount = 0;
       const BATCH_SIZE = 20; // Firestore batch limit is 500, we'll use 20 for safety

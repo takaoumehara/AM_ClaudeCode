@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { ProfileListItem } from '@/lib/firebase/profiles';
-import { SortField, SortDirection } from '@/components/profiles/ProfileTable';
+import { SortField, SortDirection } from '@/components/profiles/ProfileCardView';
 
 interface UseTableSortOptions {
   initialSort?: {

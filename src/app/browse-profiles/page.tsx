@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { logOut } from '@/lib/firebase/auth';
 import { ProfileCardView } from '@/components/profiles/ProfileCardView';
+import { ProfileListView } from '@/components/profiles/ProfileListView';
 import { SkillFilter } from '@/components/filters/SkillFilter';
 import { TeamFilter } from '@/components/filters/TeamFilter';
 import { SearchBox } from '@/components/filters/SearchBox';
@@ -12,10 +14,14 @@ import { useProfiles } from '@/hooks/useProfiles';
 import { useProfileFilters } from '@/hooks/useProfileFilters';
 import { useTableSort } from '@/hooks/useTableSort';
 import Link from 'next/link';
+import { Grid, List, Loader2 } from 'lucide-react';
 
-export default function ListViewPage() {
+type ViewMode = 'card' | 'list';
+
+export default function BrowseProfilesPage() {
   const { user } = useAuth();
   const { currentOrganization } = useOrganization();
+  const [viewMode, setViewMode] = useState<ViewMode>('card');
 
   // Fetch profiles data
   const {
@@ -27,7 +33,7 @@ export default function ListViewPage() {
     refresh,
     loadingMore
   } = useProfiles({
-    pageSize: 50, // Load more for table view
+    pageSize: 50,
     organizationId: currentOrganization?.id
   });
 
@@ -106,12 +112,6 @@ export default function ListViewPage() {
 
               <div className="flex items-center space-x-4">
                 <Link
-                  href="/browse-profiles"
-                  className="text-sm text-green-600 hover:text-green-700 px-3 py-1 rounded-md border border-green-200 hover:border-green-300"
-                >
-                  Browse (List & Cards)
-                </Link>
-                <Link
                   href="/profile/edit"
                   className="text-sm text-blue-600 hover:text-blue-700 px-3 py-1 rounded-md border border-blue-200 hover:border-blue-300"
                 >
@@ -133,28 +133,56 @@ export default function ListViewPage() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          {/* Header */}
+          {/* Header with View Toggle */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Profiles List View
+                  Browse Profiles
                 </h1>
                 <p className="text-gray-600 mt-2">
                   {currentOrganization 
-                    ? `Browse and compare people in ${currentOrganization.name}`
-                    : 'Browse and compare profiles in a detailed table format'
+                    ? `Discover people in ${currentOrganization.name}`
+                    : 'Discover and connect with people'
                   }
                 </p>
               </div>
               
-              <div className="text-sm text-gray-600">
-                {!loading && (
-                  <span>
-                    Showing {sortedProfiles.length} of {profiles.length} profile{profiles.length !== 1 ? 's' : ''}
-                    {hasActiveFilters && ' (filtered)'}
-                  </span>
-                )}
+              <div className="flex items-center space-x-4">
+                {/* View Mode Toggle */}
+                <div className="flex rounded-lg border border-gray-300 p-1">
+                  <button
+                    onClick={() => setViewMode('card')}
+                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                      viewMode === 'card'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    <Grid size={16} className="mr-2" />
+                    Cards
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                      viewMode === 'list'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    <List size={16} className="mr-2" />
+                    List
+                  </button>
+                </div>
+
+                <div className="text-sm text-gray-600">
+                  {!loading && (
+                    <span>
+                      Showing {sortedProfiles.length} of {profiles.length} profile{profiles.length !== 1 ? 's' : ''}
+                      {hasActiveFilters && ' (filtered)'}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -222,15 +250,25 @@ export default function ListViewPage() {
             )}
           </div>
 
-          {/* Profile Cards */}
+          {/* Profile Views */}
           <div className="mb-8">
-            <ProfileCardView
-              profiles={sortedProfiles}
-              loading={loading}
-              onSort={handleSort}
-              sortField={sortField}
-              sortDirection={sortDirection}
-            />
+            {viewMode === 'card' ? (
+              <ProfileCardView
+                profiles={sortedProfiles}
+                loading={loading}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+              />
+            ) : (
+              <ProfileListView
+                profiles={sortedProfiles}
+                loading={loading}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+              />
+            )}
           </div>
 
           {/* Load More Button */}
@@ -243,7 +281,7 @@ export default function ListViewPage() {
               >
                 {loadingMore ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <Loader2 className="animate-spin h-4 w-4 mr-2" />
                     Loading...
                   </>
                 ) : (

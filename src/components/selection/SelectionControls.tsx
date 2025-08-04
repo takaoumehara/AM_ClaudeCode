@@ -32,7 +32,7 @@ export const SelectionControls: React.FC<SelectionControlsProps> = ({
           <div className="flex items-center space-x-3">
             <SelectionIndicator 
               count={selectedCount} 
-              maxSelection={maxSelection}
+              maxCount={maxSelection}
               className="bg-blue-100 text-blue-800"
             />
             
@@ -90,7 +90,7 @@ export const InlineSelectionControls: React.FC<{
     <div className={`flex items-center space-x-2 ${className}`}>
       <SelectionIndicator 
         count={selectedCount} 
-        maxSelection={maxSelection}
+        maxCount={maxSelection}
         className="bg-gray-100 text-gray-700"
       />
       
@@ -139,7 +139,7 @@ export const SelectionToolbar: React.FC<{
         <div className="flex items-center space-x-4">
           <SelectionIndicator 
             count={selectedCount} 
-            maxSelection={maxSelection}
+            maxCount={maxSelection}
             className="bg-blue-100 text-blue-800"
           />
           

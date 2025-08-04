@@ -511,33 +511,20 @@ function generateProfile(template: any, visibility: ProfileVisibility = 'organiz
       photoUrl: generateAvatarUrl(template.name),
       teamIds: [] // Will be assigned later
     },
-    professional: {
-      experience: `${template.experience} years of experience`,
-      education: 'Bachelor\'s Degree in relevant field', // Simplified for demo
-      certifications: [],
-      achievements: []
-    },
     personal: {
-      bio: template.bio,
-      interests: template.interests,
-      values: ['Innovation', 'Collaboration', 'Excellence'],
-      goals: ['Make an impact', 'Continuous learning', 'Build great products']
-    },
-    visibility: {
-      overall: visibility,
-      fields: {
-        email: 'private',
-        phone: 'private',
-        professional: 'organization',
-        personal: 'team',
-        social: 'public'
+      hobbies: template.interests || [],
+      favorites: ['Technology', 'Innovation', 'Learning'],
+      learning: ['New technologies', 'Best practices', 'Industry trends'],
+      motto: template.bio || 'Striving for excellence',
+      activities: ['Coding', 'Mentoring', 'Learning'],
+      customFields: {},
+      show: {
+        hobbies: true,
+        favorites: true,
+        learning: true,
+        motto: true,
+        activities: true
       }
-    },
-    metadata: {
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      lastActive: serverTimestamp(),
-      profileCompleteness: Math.floor(Math.random() * 30) + 70 // 70-100%
     }
   };
 }
@@ -582,16 +569,21 @@ export async function generateDemoData() {
     const orgData: Organization = {
       id: DEMO_ORG_ID,
       name: DEMO_ORG_NAME,
-      description: 'A cutting-edge technology company building the future of work',
-      settings: {
-        allowedDomains: ['techcorp.demo'],
-        requireApproval: false,
-        visibility: 'public'
-      },
-      members: [],
       admins: [auth.currentUser?.uid || ''],
-      createdAt: serverTimestamp() as any,
-      updatedAt: serverTimestamp() as any
+      members: [],
+      orgProfileTemplate: {
+        fields: [
+          { key: 'department', type: 'string', required: true, publicDefault: true },
+          { key: 'title', type: 'string', required: true, publicDefault: true },
+          { key: 'skills', type: 'array', required: false, publicDefault: true },
+          { key: 'bio', type: 'text', required: false, publicDefault: false }
+        ]
+      },
+      teams: [],
+      projects: [],
+      inviteLinks: [],
+      tags: ['technology', 'innovation', 'demo'],
+      createdAt: serverTimestamp() as any
     };
 
     await setDoc(doc(db, 'organizations', DEMO_ORG_ID), orgData);
