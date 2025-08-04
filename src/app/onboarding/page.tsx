@@ -1,22 +1,24 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { OrganizationPickerV2 } from '@/components/onboarding/OrganizationPickerV2';
 
 export default function OnboardingPage() {
   const router = useRouter();
 
-  const handleSkipOrganization = () => {
-    router.push('/profiles');
-  };
+  useEffect(() => {
+    // Redirect to browse page which handles org selection intelligently
+    router.replace('/browse');
+  }, [router]);
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <OrganizationPickerV2
-          onSkip={handleSkipOrganization}
-        />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Setting up your workspace...</p>
+        </div>
       </div>
     </ProtectedRoute>
   );

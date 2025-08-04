@@ -29,7 +29,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     try {
       await signInWithEmail(email, password);
       onSuccess?.();
-      router.push('/onboarding');
+      router.push('/browse');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
@@ -44,7 +44,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     try {
       await signInWithGoogle();
       onSuccess?.();
-      router.push('/onboarding');
+      router.push('/browse');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Google login failed');
     } finally {
@@ -59,7 +59,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     try {
       await signInWithGitHub();
       onSuccess?.();
-      router.push('/onboarding');
+      router.push('/browse');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'GitHub login failed');
     } finally {

@@ -6,6 +6,8 @@ import { Header } from '@/components/layout/Header';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { ProfileCardView } from '@/components/profiles/ProfileCardView';
 import { ProfileListView } from '@/components/profiles/ProfileListView';
+import { SmartOrgSelector } from '@/components/onboarding/SmartOrgSelector';
+import { ProfileSkeleton } from '@/components/common/ProfileSkeleton';
 import { getProfilesByOrganization, type ProfileListItem } from '@/lib/firebase/profiles';
 
 type ViewMode = 'cards' | 'list';
@@ -14,34 +16,51 @@ export default function BrowsePage() {
   const { currentOrganization } = useOrganization();
   const [profiles, setProfiles] = useState<ProfileListItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [switchingOrg, setSwitchingOrg] = useState(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
 
+  // Track previous organization to detect switches
+  const [prevOrgId, setPrevOrgId] = useState<string | null>(null);
+
   // Load profiles
   useEffect(() => {
     const loadProfiles = async () => {
       if (!currentOrganization) {
         setLoading(false);
+        setSwitchingOrg(false);
         return;
       }
 
-      try {
+      // If switching organizations, show switching state instead of full loading
+      const isOrgSwitch = prevOrgId && prevOrgId !== currentOrganization.id;
+      if (isOrgSwitch) {
+        setSwitchingOrg(true);
+        setLoading(false);
+      } else {
         setLoading(true);
+        setSwitchingOrg(false);
+      }
+
+      try {
         const result = await getProfilesByOrganization(currentOrganization.id);
         setProfiles(result.profiles);
+        setError('');
       } catch (err) {
         console.error('Error loading profiles:', err);
         setError('Failed to load profiles');
       } finally {
         setLoading(false);
+        setSwitchingOrg(false);
+        setPrevOrgId(currentOrganization.id);
       }
     };
 
     loadProfiles();
-  }, [currentOrganization]);
+  }, [currentOrganization, prevOrgId]);
 
   // Filter profiles based on search and filters
   const filteredProfiles = profiles.filter(item => {
@@ -99,10 +118,9 @@ export default function BrowsePage() {
   if (!currentOrganization) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">No Organization Selected</h2>
-            <p className="text-gray-600">Please select an organization to browse profiles.</p>
+        <div className="min-h-screen bg-gray-50">
+          <div className="py-12">
+            <SmartOrgSelector />
           </div>
         </div>
       </ProtectedRoute>
@@ -218,10 +236,15 @@ export default function BrowsePage() {
             </div>
 
             {/* Content */}
-            {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              </div>
+            {loading || switchingOrg ? (
+              switchingOrg ? (
+                <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading {currentOrganization?.name} profiles...</p>
+                </div>
+              ) : (
+                <ProfileSkeleton count={12} viewMode={viewMode} />
+              )
             ) : error ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
                 <p className="text-red-700">{error}</p>

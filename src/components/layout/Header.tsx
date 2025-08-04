@@ -20,12 +20,14 @@ export const Header: React.FC<HeaderProps> = ({
   onViewChange 
 }) => {
   const { user } = useAuth();
-  const { currentOrganization } = useOrganization();
+  const { currentOrganization, organizations, setCurrentOrganization } = useOrganization();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [orgDropdownOpen, setOrgDropdownOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const orgDropdownRef = useRef<HTMLDivElement>(null);
 
   // Load user profile
   useEffect(() => {
@@ -41,22 +43,25 @@ export const Header: React.FC<HeaderProps> = ({
     loadProfile();
   }, [user]);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
+      if (orgDropdownRef.current && !orgDropdownRef.current.contains(event.target as Node)) {
+        setOrgDropdownOpen(false);
+      }
     };
 
-    if (dropdownOpen) {
+    if (dropdownOpen || orgDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownOpen]);
+  }, [dropdownOpen, orgDropdownOpen]);
 
   const handleLogout = async () => {
     try {
@@ -107,9 +112,68 @@ export const Header: React.FC<HeaderProps> = ({
               </h1>
             </Link>
             {currentOrganization && (
-              <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                {currentOrganization.name}
-              </span>
+              <div className="ml-4 relative" ref={orgDropdownRef}>
+                <button
+                  onClick={() => setOrgDropdownOpen(!orgDropdownOpen)}
+                  className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full hover:bg-blue-200 transition-colors"
+                >
+                  <span>{currentOrganization.name}</span>
+                  {organizations.length > 1 && (
+                    <svg 
+                      className={`w-3 h-3 transition-transform ${orgDropdownOpen ? 'rotate-180' : ''}`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  )}
+                </button>
+
+                {/* Organization Dropdown */}
+                {orgDropdownOpen && organizations.length > 1 && (
+                  <div className="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1">
+                      <div className="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Switch Organization
+                      </div>
+                      {organizations.map((org) => (
+                        <button
+                          key={org.id}
+                          onClick={() => {
+                            setCurrentOrganization(org);
+                            setOrgDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center justify-between ${
+                            org.id === currentOrganization.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                          }`}
+                        >
+                          <span>{org.name}</span>
+                          {org.id === currentOrganization.id && (
+                            <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </button>
+                      ))}
+                      <div className="border-t border-gray-100 mt-1">
+                        <button
+                          onClick={() => {
+                            setOrgDropdownOpen(false);
+                            router.push('/browse');
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 flex items-center"
+                        >
+                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          Create New Organization
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 

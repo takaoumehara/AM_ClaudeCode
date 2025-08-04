@@ -42,7 +42,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess }) => {
     try {
       await signUpWithEmail(email, password);
       onSuccess?.();
-      router.push('/onboarding');
+      router.push('/browse');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign up failed');
     } finally {
@@ -57,7 +57,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess }) => {
     try {
       await signInWithGoogle();
       onSuccess?.();
-      router.push('/onboarding');
+      router.push('/browse');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Google sign up failed');
     } finally {
@@ -72,7 +72,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess }) => {
     try {
       await signInWithGitHub();
       onSuccess?.();
-      router.push('/onboarding');
+      router.push('/browse');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'GitHub sign up failed');
     } finally {
