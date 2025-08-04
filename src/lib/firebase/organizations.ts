@@ -31,6 +31,22 @@ export interface Organization {
   inviteLinks: string[];
   tags: string[];
   createdAt?: any;
+  logo?: string;
+  description?: string;
+  type?: 'corporate' | 'community' | 'project' | 'startup' | 'other';
+}
+
+export interface OrganizationInvitation {
+  id: string;
+  organizationId: string;
+  organizationName: string;
+  organizationLogo?: string;
+  email: string;
+  invitedBy: string;
+  inviterName: string;
+  status: 'pending' | 'accepted' | 'declined';
+  createdAt: any;
+  expiresAt: any;
 }
 
 export interface UserOrganizationMembership {
@@ -174,6 +190,78 @@ export const searchOrganizations = async (searchTerm: string): Promise<Organizat
     return organizations;
   } catch (error) {
     console.error('Error searching organizations:', error);
+    throw error;
+  }
+};
+
+// Get invitations for a user by email
+export const getUserInvitations = async (email: string): Promise<OrganizationInvitation[]> => {
+  try {
+    const invitationsQuery = query(
+      collection(db, 'organizationInvitations'),
+      where('email', '==', email),
+      where('status', '==', 'pending')
+    );
+
+    const querySnapshot = await getDocs(invitationsQuery);
+    const invitations: OrganizationInvitation[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      // Check if invitation is not expired
+      const now = new Date();
+      const expiresAt = data.expiresAt?.toDate();
+      
+      if (!expiresAt || expiresAt > now) {
+        invitations.push({ id: doc.id, ...data } as OrganizationInvitation);
+      }
+    });
+
+    return invitations;
+  } catch (error) {
+    console.error('Error getting user invitations:', error);
+    throw error;
+  }
+};
+
+// Accept an invitation
+export const acceptInvitation = async (invitationId: string, userId: string): Promise<void> => {
+  try {
+    // Get invitation details
+    const invitationDoc = await getDoc(doc(db, 'organizationInvitations', invitationId));
+    if (!invitationDoc.exists()) {
+      throw new Error('Invitation not found');
+    }
+
+    const invitation = invitationDoc.data() as OrganizationInvitation;
+    if (invitation.status !== 'pending') {
+      throw new Error('Invitation is no longer valid');
+    }
+
+    // Join the organization
+    await joinOrganization(invitation.organizationId, userId);
+
+    // Update invitation status
+    await updateDoc(doc(db, 'organizationInvitations', invitationId), {
+      status: 'accepted',
+      acceptedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('Error accepting invitation:', error);
+    throw error;
+  }
+};
+
+// Decline an invitation
+export const declineInvitation = async (invitationId: string, feedback?: string): Promise<void> => {
+  try {
+    await updateDoc(doc(db, 'organizationInvitations', invitationId), {
+      status: 'declined',
+      declinedAt: serverTimestamp(),
+      declineFeedback: feedback || '',
+    });
+  } catch (error) {
+    console.error('Error declining invitation:', error);
     throw error;
   }
 };

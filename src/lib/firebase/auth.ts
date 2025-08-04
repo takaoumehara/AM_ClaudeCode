@@ -158,6 +158,9 @@ const handleAuthError = (error: AuthError): Error => {
     case 'auth/popup-closed-by-user':
       message = 'Sign-in popup was closed';
       break;
+    case 'auth/unauthorized-domain':
+      message = 'This domain is not authorized for authentication. Please contact support or try using localhost:3000';
+      break;
     default:
       message = error.message || 'Authentication failed';
   }

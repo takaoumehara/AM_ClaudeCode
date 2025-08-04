@@ -10,8 +10,8 @@ import { getUserProfile, type UserProfile } from '@/lib/firebase/profiles';
 
 interface HeaderProps {
   showViewToggle?: boolean;
-  currentView?: 'cards' | 'list';
-  onViewChange?: (view: 'cards' | 'list') => void;
+  currentView?: 'cards' | 'list' | 'skills-map';
+  onViewChange?: (view: 'cards' | 'list' | 'skills-map') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
@@ -216,6 +216,24 @@ export const Header: React.FC<HeaderProps> = ({
                     />
                   </svg>
                   List
+                </button>
+                <button
+                  onClick={() => onViewChange?.('skills-map')}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+                    currentView === 'skills-map'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                    />
+                  </svg>
+                  Skills Map
                 </button>
               </div>
             </div>

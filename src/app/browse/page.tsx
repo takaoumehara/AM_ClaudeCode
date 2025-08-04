@@ -6,11 +6,12 @@ import { Header } from '@/components/layout/Header';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { ProfileCardView } from '@/components/profiles/ProfileCardView';
 import { ProfileListView } from '@/components/profiles/ProfileListView';
+import { SkillsMapView } from '@/components/skills-map/SkillsMapView';
 import { SmartOrgSelector } from '@/components/onboarding/SmartOrgSelector';
 import { ProfileSkeleton } from '@/components/common/ProfileSkeleton';
 import { getProfilesByOrganization, type ProfileListItem } from '@/lib/firebase/profiles';
 
-type ViewMode = 'cards' | 'list';
+type ViewMode = 'cards' | 'list' | 'skills-map';
 
 export default function BrowsePage() {
   const { currentOrganization } = useOrganization();
@@ -143,10 +144,15 @@ export default function BrowsePage() {
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  {viewMode === 'cards' ? 'Browse Profiles' : 'Profiles List View'}
+                  {viewMode === 'cards' && 'Browse Profiles'}
+                  {viewMode === 'list' && 'Profiles List View'}
+                  {viewMode === 'skills-map' && 'Skills Map'}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Discover people in {currentOrganization.name}
+                  {viewMode === 'skills-map' 
+                    ? `Explore skills and expertise across ${currentOrganization.name}`
+                    : `Discover people in ${currentOrganization.name}`
+                  }
                 </p>
               </div>
               <div className="text-sm text-gray-500">
@@ -154,7 +160,8 @@ export default function BrowsePage() {
               </div>
             </div>
 
-            {/* Search and Filters */}
+            {/* Search and Filters - Only show for cards/list views */}
+            {viewMode !== 'skills-map' && (
             <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Search */}
@@ -234,6 +241,7 @@ export default function BrowsePage() {
                 </div>
               )}
             </div>
+            )}
 
             {/* Content */}
             {loading || switchingOrg ? (
@@ -266,13 +274,19 @@ export default function BrowsePage() {
                 )}
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow-sm border">
-                {viewMode === 'cards' ? (
-                  <ProfileCardView profiles={filteredProfiles} />
+              <>
+                {viewMode === 'skills-map' ? (
+                  <SkillsMapView profiles={filteredProfiles} loading={loading} />
                 ) : (
-                  <ProfileListView profiles={filteredProfiles} />
+                  <div className="bg-white rounded-lg shadow-sm border">
+                    {viewMode === 'cards' ? (
+                      <ProfileCardView profiles={filteredProfiles} />
+                    ) : (
+                      <ProfileListView profiles={filteredProfiles} />
+                    )}
+                  </div>
                 )}
-              </div>
+              </>
             )}
           </div>
         </main>
