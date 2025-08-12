@@ -59,7 +59,14 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess }) => {
       onSuccess?.();
       router.push('/browse');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Google sign up failed');
+      console.error('Google signup error:', err);
+      
+      // Check if it's the account exists error
+      if (err instanceof Error && err.message.includes('auth/account-exists-with-different-credential')) {
+        setError('This email is already registered with a different sign-in method. Please sign in instead.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Google sign up failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -74,7 +81,14 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess }) => {
       onSuccess?.();
       router.push('/browse');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'GitHub sign up failed');
+      console.error('GitHub signup error:', err);
+      
+      // Check if it's the account exists error
+      if (err instanceof Error && err.message.includes('auth/account-exists-with-different-credential')) {
+        setError('This email is already registered with a different sign-in method. Please sign in instead.');
+      } else {
+        setError(err instanceof Error ? err.message : 'GitHub sign up failed');
+      }
     } finally {
       setLoading(false);
     }

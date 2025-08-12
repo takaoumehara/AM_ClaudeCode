@@ -201,6 +201,9 @@ const handleAuthError = (error: AuthError): Error => {
     case 'auth/unauthorized-domain':
       message = 'This domain is not authorized for authentication. Please contact support or try using localhost:3000';
       break;
+    case 'auth/account-exists-with-different-credential':
+      message = 'This email is already registered with a different sign-in method. Please use the original sign-in method.';
+      break;
     default:
       message = error.message || 'Authentication failed';
   }
