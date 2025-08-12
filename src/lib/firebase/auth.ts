@@ -10,6 +10,10 @@ import {
   User,
   UserCredential,
   AuthError,
+  fetchSignInMethodsForEmail,
+  linkWithCredential,
+  GoogleAuthProvider as GoogleAuthProviderClass,
+  GithubAuthProvider as GithubAuthProviderClass,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from './config';
@@ -54,7 +58,25 @@ export const signInWithGoogle = async (): Promise<UserCredential> => {
     await updateLastLogin(userCredential.user);
     return userCredential;
   } catch (error) {
-    throw handleAuthError(error as AuthError);
+    const authError = error as AuthError;
+    
+    // Handle account exists with different credential
+    if (authError.code === 'auth/account-exists-with-different-credential') {
+      const email = authError.customData?.email as string;
+      if (email) {
+        // Get existing sign-in methods for this email
+        const existingMethods = await fetchSignInMethodsForEmail(auth, email);
+        
+        // Create a more helpful error message
+        const methodsText = existingMethods.includes('github.com') ? 'GitHub' : 
+                           existingMethods.includes('password') ? 'email/password' : 
+                           'another provider';
+        
+        throw new Error(`An account with this email already exists using ${methodsText}. Please sign in with ${methodsText} first, then link your Google account in your profile settings.`);
+      }
+    }
+    
+    throw handleAuthError(authError);
   }
 };
 
@@ -65,7 +87,25 @@ export const signInWithGitHub = async (): Promise<UserCredential> => {
     await updateLastLogin(userCredential.user);
     return userCredential;
   } catch (error) {
-    throw handleAuthError(error as AuthError);
+    const authError = error as AuthError;
+    
+    // Handle account exists with different credential
+    if (authError.code === 'auth/account-exists-with-different-credential') {
+      const email = authError.customData?.email as string;
+      if (email) {
+        // Get existing sign-in methods for this email
+        const existingMethods = await fetchSignInMethodsForEmail(auth, email);
+        
+        // Create a more helpful error message
+        const methodsText = existingMethods.includes('google.com') ? 'Google' : 
+                           existingMethods.includes('password') ? 'email/password' : 
+                           'another provider';
+        
+        throw new Error(`An account with this email already exists using ${methodsText}. Please sign in with ${methodsText} first, then link your GitHub account in your profile settings.`);
+      }
+    }
+    
+    throw handleAuthError(authError);
   }
 };
 
@@ -166,4 +206,41 @@ const handleAuthError = (error: AuthError): Error => {
   }
   
   return new Error(message);
+};
+
+// Account linking functions
+export const linkGoogleAccount = async (): Promise<UserCredential> => {
+  if (!auth.currentUser) {
+    throw new Error('No user is currently signed in');
+  }
+  
+  try {
+    const credential = GoogleAuthProvider.credential();
+    const result = await linkWithCredential(auth.currentUser, credential);
+    return result;
+  } catch (error) {
+    throw handleAuthError(error as AuthError);
+  }
+};
+
+export const linkGitHubAccount = async (): Promise<UserCredential> => {
+  if (!auth.currentUser) {
+    throw new Error('No user is currently signed in');
+  }
+  
+  try {
+    const credential = GithubAuthProvider.credential();
+    const result = await linkWithCredential(auth.currentUser, credential);
+    return result;
+  } catch (error) {
+    throw handleAuthError(error as AuthError);
+  }
+};
+
+export const getLinkedProviders = (): string[] => {
+  if (!auth.currentUser) {
+    return [];
+  }
+  
+  return auth.currentUser.providerData.map(provider => provider.providerId);
 };
