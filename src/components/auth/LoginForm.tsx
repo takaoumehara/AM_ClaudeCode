@@ -47,13 +47,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       router.push('/browse');
     } catch (err) {
       console.error('Google login error:', err);
-      
-      // Check if it's the account exists error
-      if (err instanceof Error && err.message.includes('auth/account-exists-with-different-credential')) {
-        setError('This email is already registered with a different sign-in method (likely GitHub or email/password). Please sign in with that method instead.');
-      } else {
-        setError(err instanceof Error ? err.message : 'Google login failed');
-      }
+      setError(err instanceof Error ? err.message : 'Google login failed');
     } finally {
       setLoading(false);
     }
@@ -69,13 +63,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       router.push('/browse');
     } catch (err) {
       console.error('GitHub login error:', err);
-      
-      // Check if it's the account exists error
-      if (err instanceof Error && err.message.includes('auth/account-exists-with-different-credential')) {
-        setError('This email is already registered with a different sign-in method (likely Google). Please sign in with that method instead.');
-      } else {
-        setError(err instanceof Error ? err.message : 'GitHub login failed');
-      }
+      setError(err instanceof Error ? err.message : 'GitHub login failed');
     } finally {
       setLoading(false);
     }

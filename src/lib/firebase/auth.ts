@@ -59,21 +59,12 @@ export const signInWithGoogle = async (): Promise<UserCredential> => {
     return userCredential;
   } catch (error) {
     const authError = error as AuthError;
+    console.error('Google auth error details:', authError);
     
     // Handle account exists with different credential
     if (authError.code === 'auth/account-exists-with-different-credential') {
-      const email = authError.customData?.email as string;
-      if (email) {
-        // Get existing sign-in methods for this email
-        const existingMethods = await fetchSignInMethodsForEmail(auth, email);
-        
-        // Create a more helpful error message
-        const methodsText = existingMethods.includes('github.com') ? 'GitHub' : 
-                           existingMethods.includes('password') ? 'email/password' : 
-                           'another provider';
-        
-        throw new Error(`An account with this email already exists using ${methodsText}. Please sign in with ${methodsText} first, then link your Google account in your profile settings.`);
-      }
+      // Always return a user-friendly message for this error
+      throw new Error('This email is already registered with a different sign-in method (likely GitHub or email/password). Please sign in with your existing method first.');
     }
     
     throw handleAuthError(authError);
@@ -88,21 +79,12 @@ export const signInWithGitHub = async (): Promise<UserCredential> => {
     return userCredential;
   } catch (error) {
     const authError = error as AuthError;
+    console.error('GitHub auth error details:', authError);
     
     // Handle account exists with different credential
     if (authError.code === 'auth/account-exists-with-different-credential') {
-      const email = authError.customData?.email as string;
-      if (email) {
-        // Get existing sign-in methods for this email
-        const existingMethods = await fetchSignInMethodsForEmail(auth, email);
-        
-        // Create a more helpful error message
-        const methodsText = existingMethods.includes('google.com') ? 'Google' : 
-                           existingMethods.includes('password') ? 'email/password' : 
-                           'another provider';
-        
-        throw new Error(`An account with this email already exists using ${methodsText}. Please sign in with ${methodsText} first, then link your GitHub account in your profile settings.`);
-      }
+      // Always return a user-friendly message for this error
+      throw new Error('This email is already registered with a different sign-in method (likely Google or email/password). Please sign in with your existing method first.');
     }
     
     throw handleAuthError(authError);
@@ -205,7 +187,18 @@ const handleAuthError = (error: AuthError): Error => {
       message = 'This email is already registered with a different sign-in method. Please use the original sign-in method.';
       break;
     default:
-      message = error.message || 'Authentication failed';
+      // Clean up Firebase error messages
+      if (error.message && error.message.includes('Firebase: Error')) {
+        // Extract the error code from messages like "Firebase: Error (auth/some-error)"
+        const match = error.message.match(/\(([^)]+)\)/);
+        if (match && match[1]) {
+          message = `Authentication error: ${match[1].replace('auth/', '').replace(/-/g, ' ')}`;
+        } else {
+          message = 'Authentication failed. Please try again.';
+        }
+      } else {
+        message = error.message || 'Authentication failed';
+      }
   }
   
   return new Error(message);
