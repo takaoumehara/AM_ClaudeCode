@@ -6,14 +6,18 @@ import { getUserProfile, createUserProfile, type UserProfile } from '@/lib/fireb
 import { ProfileForm } from './ProfileForm';
 import { ImageUpload } from './ImageUpload';
 
+import type { ProfileSuggestion } from '@/lib/prompts/types';
+
 interface ProfileEditorProps {
   onComplete?: (profile: UserProfile) => void;
   showTitle?: boolean;
+  initialSuggestions?: ProfileSuggestion[];
 }
 
 export const ProfileEditor: React.FC<ProfileEditorProps> = ({
   onComplete,
-  showTitle = true
+  showTitle = true,
+  initialSuggestions = []
 }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);

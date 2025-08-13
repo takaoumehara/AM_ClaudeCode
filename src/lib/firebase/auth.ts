@@ -204,16 +204,15 @@ const handleAuthError = (error: AuthError): Error => {
   return new Error(message);
 };
 
-// Account linking functions
+// Account linking functions (placeholder for future implementation)
 export const linkGoogleAccount = async (): Promise<UserCredential> => {
   if (!auth.currentUser) {
     throw new Error('No user is currently signed in');
   }
   
   try {
-    const credential = GoogleAuthProvider.credential();
-    const result = await linkWithCredential(auth.currentUser, credential);
-    return result;
+    // This would require a full OAuth flow - placeholder for now
+    throw new Error('Account linking not yet implemented');
   } catch (error) {
     throw handleAuthError(error as AuthError);
   }
@@ -225,9 +224,8 @@ export const linkGitHubAccount = async (): Promise<UserCredential> => {
   }
   
   try {
-    const credential = GithubAuthProvider.credential();
-    const result = await linkWithCredential(auth.currentUser, credential);
-    return result;
+    // This would require a full OAuth flow - placeholder for now
+    throw new Error('Account linking not yet implemented');
   } catch (error) {
     throw handleAuthError(error as AuthError);
   }
